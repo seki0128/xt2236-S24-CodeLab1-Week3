@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.IO;
-using UnityEngine.Windows;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,7 +25,7 @@ public class GameManager : MonoBehaviour
         set
         {
             score = value;
-            Debug.Log("score changed!");
+            Debug.Log("Score changed!");
 
             if (score > highScore)
             {
@@ -43,8 +42,8 @@ public class GameManager : MonoBehaviour
         {
             if (File.Exists(DATA_FULL_HS_FILE_PATH))
             {
-                //string fileContents = File.ReadAllText(DATA_FULL_HS_FILE_PATH);
-                //highScore = Int32.Parse(fileContents);
+                string fileContents = File.ReadAllText(DATA_FULL_HS_FILE_PATH);
+                highScore = Int32.Parse(fileContents);
             }
 
             return highScore;
@@ -54,18 +53,20 @@ public class GameManager : MonoBehaviour
         set
         {
             highScore = value;
-            Debug.Log("new high score");
+            Debug.Log("new high score! ");
             string fileContent = "" + highScore;
 
+            // Create the directory in first run
             if (!Directory.Exists(Application.dataPath + DATA_DIR))
             {
                 Directory.CreateDirectory(Application.dataPath + DATA_DIR);
             }
             
-            //File.WriteAllBytes(DATA_FULL_HS_FILE_PATH, fileContent);
+            File.WriteAllText(DATA_FULL_HS_FILE_PATH, fileContent);
         }
     }
 
+    // Set this game manager a singleton
     void Awake()
     {
         if (instance == null)
@@ -83,13 +84,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Application.dataPath);
         DATA_FULL_HS_FILE_PATH = Application.dataPath + DATA_DIR + DATA_HS_FILE;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PlayerPrefs.DeleteKey(KEY_HIGH_SCORE);
+        }
         
     }
 }
